@@ -112,24 +112,31 @@ Route::get('/make', function () {
 
 // use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
-
 Route::get('/reset-storage', function () {
     $link = public_path('storage');
+    $source = storage_path('app/uploads'); // <-- change this to your actual image folder
 
-    // Remove old symlink if it exists
+    // 1. Remove old symlink
     if (is_link($link) || File::exists($link)) {
         File::delete($link);
     }
 
-    // Recreate symlink
+    // 2. Recreate symlink
     $exitCode = Artisan::call('storage:link');
 
-    // Verify
-    if ($exitCode === 0 && File::exists($link)) {
-        return "✅ Storage link recreated successfully.";
+    // 3. Copy images from source to public storage
+    if (File::exists($source)) {
+        File::copyDirectory($source, storage_path('app/public'));
     }
 
-    return "❌ Failed to create storage link.";
+    // 4. Verify symlink and files
+    $files = glob(public_path('storage') . '/*');
+
+    if ($exitCode === 0 && count($files)) {
+        return "✅ Storage link recreated and files copied successfully: " . implode(', ', array_map('basename', $files));
+    }
+
+    return "❌ Storage link created, but no files found!";
 });
 
 Route::get('/check-storage', function() {
