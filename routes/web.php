@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,10 +92,16 @@ Route::get('/reset', function () {
 
     //     return "✅ Password reset for {$user->email}";
     // }
-    $bycrypt = Hash::make('newpassword123');
+    $bycrypt = Hash::make('password123');
     dd($bycrypt);
 
     return "❌ User not found.";
 });
 
+
+
+Route::get('/make', function () {
+    Artisan::call('storage:link');
+    return "✅ storage link created.";
+});
 
