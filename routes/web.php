@@ -101,6 +101,11 @@ Route::get('/reset', function () {
 
 
 Route::get('/make', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    Artisan::call('optimize:clear');
     Artisan::call('storage:link');
     return "✅ storage link created.";
 });
