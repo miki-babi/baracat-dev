@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
                     // Telegram::class, // 👈 Add here
                 ])
                 ->resources([
-                    \App\Filament\Resources\SupplierResource::class, // 👈 Register new resource
+                    // \App\Filament\Resources\SupplierResource::class, // 👈 Register new resource
                      \App\Filament\Resources\ListingResource::class, // 👈 add this line
                      \App\Filament\Resources\TelegramConfigResource::class, // 👈 add this line
                 ])
