@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between h-16 lg:h-20">
             <!-- Logo -->
             <div class="flex-shrink-0">
-                <h1 class="font-serif text-2xl lg:text-3xl font-bold tracking-tight text-luxury-black">Aurelia</h1>
+                <h1 class="font-serif text-2xl lg:text-3xl font-bold tracking-tight text-luxury-black">Baracat</h1>
             </div>
 
             <!-- Desktop Navigation -->
