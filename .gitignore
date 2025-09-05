@@ -5,8 +5,8 @@
 # /public/css/lunarphp
 # /public/js/filament
 # /public/js/app/components
-# /public/storage
-# /storage/*.key
+/public/storage
+/storage/*.key
 # # /vendor
 .env
 # .env.backup
