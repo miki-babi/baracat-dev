@@ -132,3 +132,12 @@ Route::get('/reset-storage', function () {
     return "❌ Failed to create storage link.";
 });
 
+Route::get('/check-storage', function() {
+    $link = public_path('storage');
+    $files = glob($link.'/*');
+
+    if (count($files)) {
+        return "✅ Storage has files: ".implode(', ', array_map('basename', $files));
+    }
+    return "❌ Storage is empty!";
+});
