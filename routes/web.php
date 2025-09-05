@@ -110,3 +110,25 @@ Route::get('/make', function () {
     return "✅ storage link created.";
 });
 
+// use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
+
+Route::get('/reset-storage', function () {
+    $link = public_path('storage');
+
+    // Remove old symlink if it exists
+    if (is_link($link) || File::exists($link)) {
+        File::delete($link);
+    }
+
+    // Recreate symlink
+    $exitCode = Artisan::call('storage:link');
+
+    // Verify
+    if ($exitCode === 0 && File::exists($link)) {
+        return "✅ Storage link recreated successfully.";
+    }
+
+    return "❌ Failed to create storage link.";
+});
+
