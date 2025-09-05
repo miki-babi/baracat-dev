@@ -1,0 +1,13 @@
+{
+    "name": "miki/role",
+    "type": "library",
+    "license": "mit",
+    "authors": [
+        {
+            "name": "miki-babi",
+            "email": "mikiyasshiferaw@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
