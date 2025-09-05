@@ -269,8 +269,8 @@ class ProductResource extends BaseResource
 
                 $price = Pricing::for($variant)->get()->matched;
 
-                // $imageUrl = $record->getFirstMediaUrl(config('lunar.media.collection'), 'small');
-                $imageUrl = 'https://images.pexels.com/photos/326576/pexels-photo-326576.jpeg';
+                $imageUrl = $record->getFirstMediaUrl(config('lunar.media.collection'), 'small');
+                // $imageUrl = 'https://images.pexels.com/photos/326576/pexels-photo-326576.jpeg';
 
                 if ($telegram && $imageUrl) {
                     $caption = "Product: {$record->translateAttribute('name')}\n";
@@ -286,7 +286,7 @@ class ProductResource extends BaseResource
                             [
                                 [
                                     'text' => 'View Product 🌐',
-                                    'url'  => 'http://127.0.0.1:8000/products/' . $record->defaultUrl->slug,
+                                    'url'  => env('APP_URL').'/products/' . $record->defaultUrl->slug,
                                 ]
                             ]
                         ]
@@ -315,8 +315,8 @@ class ProductResource extends BaseResource
 
                         $price = Pricing::for($variant)->get()->matched;
 
-                        // $imageUrl = $record->getFirstMediaUrl(config('lunar.media.collection'), 'small');
-                        $imageUrl = 'https://images.pexels.com/photos/326576/pexels-photo-326576.jpeg';
+                        $imageUrl = $record->getFirstMediaUrl(config('lunar.media.collection'), 'small');
+                        // $imageUrl = 'https://images.pexels.com/photos/326576/pexels-photo-326576.jpeg';
 
                        if ($telegram && $imageUrl) {
                             $caption = "Product: {$record->translateAttribute('name')}\n";
@@ -332,7 +332,7 @@ class ProductResource extends BaseResource
                                         [
                                             [
                                                 'text' => 'View Product 🌐',
-                                                'url'  => 'http://127.0.0.1:8000/products/' . $record->defaultUrl->slug,
+                                                'url'  => env('APP_URL').'/products/' . $record->defaultUrl->slug,
                                             ]
                                         ]
                                     ]
