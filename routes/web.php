@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Artisan;
 
 Route::get('/', Home::class);
 Route::get('/test', function () {
-    return "test";
+    return Auth::user();
 });
 
 Route::get('/collections/{slug}', CollectionPage::class)->name('collection.view');
@@ -49,6 +49,7 @@ Route::get('/auth/redirect', function () {
 
 use Lunar\Models\Customer;
 use Lunar\Models\Cart;
+use Lunar\Facades\CartSession;
 
 Route::get('/auth/google/callback', function () {
     $googleUser = Socialite::driver('google')->user();
@@ -62,13 +63,6 @@ Route::get('/auth/google/callback', function () {
         ]
     );
 
-
-    // Find or create corresponding Lunar Customer
-    // $customer = Customer::firstOrCreate(
-    //     ['email' => $user->email],
-    //     ['first_name' => explode(" ",$user->name)[0]],
-    //     ['last_name' => explode(" ",$user->name)[1] ?? null] // Assuming phone is available
-    // );
     $customer = Lunar\Models\Customer::create([
         'title' => 'Mr.',
         'first_name' => 'Tony',
@@ -80,11 +74,11 @@ Route::get('/auth/google/callback', function () {
         ],
     ]);
     // Associate the cart with the Lunar Customer
-    // $cart = Cart::current(); // gets the current session cart
-    // $cart->associate($customer);
+    $cart = CartSession::getCart(); // gets the current session cart
+    $cart->associate($customer);
     Auth::login($user);
     // CartSession::setCart($cart);
-    dd("done");
+    dd($cart);
 });
 
 // Route::get('/lunar/admin', function () {
