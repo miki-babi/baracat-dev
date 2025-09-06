@@ -234,11 +234,10 @@ $translator = new class
         $arrayDepth = -1;
         $depthKeys = [];
 
-        foreach ($tokens as $index => $token) {
+        foreach ($tokens as $token) {
             if (!is_array($token)) {
                 if ($token === '[') {
                     $inArrayKey = true;
-                    $currentIndex = 0;
                     $arrayDepth++;
                 }
 
@@ -256,15 +255,6 @@ $translator = new class
             }
 
             if ($inArrayKey && $token[0] === T_CONSTANT_ENCAPSED_STRING) {
-                $nextToken = isset($tokens[$index + 1]) ? $tokens[$index + 1] : null;
-                $nextValue = isset($nextToken[1]) ? $nextToken[1] : $nextToken;
-
-                if ($nextValue === ',' || str_contains($nextValue, "\n")) {
-                    $token[1] = $currentIndex;
-
-                    $currentIndex++;
-                }
-
                 $depthKeys[$arrayDepth] = trim($token[1], '"\'');
 
                 \Illuminate\Support\Arr::set($found, implode('.', $depthKeys), $token[2]);

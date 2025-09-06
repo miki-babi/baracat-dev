@@ -23,7 +23,11 @@ use Illuminate\Support\Facades\Artisan;
 |
 */
 
+
 Route::get('/', Home::class);
+Route::get('/test', function () {
+    return "test";
+});
 
 Route::get('/collections/{slug}', CollectionPage::class)->name('collection.view');
 
@@ -74,14 +78,14 @@ Route::get('/auth/google/callback', function () {
     dd("done");
 });
 
-Route::get('/lunar/admin', function () {
-    if(!Auth::check()) {
-        // return redirect()->route('login');
-        return "not auth";
-    }
-    dd(Auth::user());
-    return "hello";
-})->name('lunar.admin');
+// Route::get('/lunar/admin', function () {
+//     if(!Auth::check()) {
+//         // return redirect()->route('login');
+//         return "not auth";
+//     }
+//     dd(Auth::user());
+//     return "hello";
+// })->name('lunar.admin');
 
 Route::get('/reset', function () {
 //    $user = User::where('email', 'your@email.com')->first();

@@ -65,12 +65,11 @@ try {
 
 echo LaravelVsCode::outputMarker('START_OUTPUT');
 
-$local = collect(\Illuminate\Support\Facades\File::allFiles(config_path()))
-  ->filter(fn(\Symfony\Component\Finder\SplFileInfo $file) => $file->getExtension() === 'php')
-  ->map(fn (\Symfony\Component\Finder\SplFileInfo $file) => $file->getPathname())
+$local = collect(glob(config_path("/*.php")))
+  ->merge(glob(config_path("**/*.php")))
   ->map(fn ($path) => [
       (string) str($path)
-        ->replace([config_path(DIRECTORY_SEPARATOR), ".php"], "")
+        ->replace([config_path('/'), ".php"], "")
         ->replace(DIRECTORY_SEPARATOR, "."),
       $path
     ]);
