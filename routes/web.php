@@ -73,7 +73,7 @@ Route::get('/auth/google/callback', function () {
     $cart->associate($user);
 
     // Optional: persist cart session
-    CartSession::setCart($cart);
+    // CartSession::setCart($cart);
 
     dd($cart);
     // return redirect('/'); // or wherever you want
