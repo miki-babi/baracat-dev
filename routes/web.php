@@ -54,7 +54,7 @@ use Lunar\Facades\CartSession;
 Route::get('/auth/google/callback', function () {
     $googleUser = Socialite::driver('google')->user();
 
-    // Create or update your local user
+    // Create or update local user
     $user = User::updateOrCreate(
         ['google_id' => $googleUser->id],
         [
@@ -63,24 +63,20 @@ Route::get('/auth/google/callback', function () {
         ]
     );
 
-    $customer = Lunar\Models\Customer::create([
-        'title' => 'Mr.',
-        'first_name' => 'Tony',
-        'last_name' => 'Stark',
-        'company_name' => 'Stark Enterprises',
-        'tax_identifier' => null,
-        'meta' => [
-            'account_no' => 'TNYSTRK1234'
-        ],
-    ]);
-    // Associate the cart with the Lunar Customer
-    $cart = CartSession::current();; // gets the current session cart
-    dd($cart);
-
-    $cart->associate($customer);
+    // Log the user in (this generates a Laravel session)
     Auth::login($user);
-    // CartSession::setCart($cart);
+
+    // Get the current cart session
+    $cart = CartSession::current();
+
+    // Associate cart with logged-in user
+    $cart->associate($user);
+
+    // Optional: persist cart session
+    CartSession::setCart($cart);
+
     dd($cart);
+    // return redirect('/'); // or wherever you want
 });
 
 // Route::get('/lunar/admin', function () {
