@@ -64,12 +64,21 @@ Route::get('/auth/google/callback', function () {
 
 
     // Find or create corresponding Lunar Customer
-    $customer = Customer::firstOrCreate(
-        ['email' => $user->email],
-        ['first_name' => explode(" ",$user->name)[0]],
-        ['last_name' => explode(" ",$user->name)[1] ?? null] // Assuming phone is available
-    );
-
+    // $customer = Customer::firstOrCreate(
+    //     ['email' => $user->email],
+    //     ['first_name' => explode(" ",$user->name)[0]],
+    //     ['last_name' => explode(" ",$user->name)[1] ?? null] // Assuming phone is available
+    // );
+    $customer = Lunar\Models\Customer::create([
+        'title' => 'Mr.',
+        'first_name' => 'Tony',
+        'last_name' => 'Stark',
+        'company_name' => 'Stark Enterprises',
+        'tax_identifier' => null,
+        'meta' => [
+            'account_no' => 'TNYSTRK1234'
+        ],
+    ]);
     // Associate the cart with the Lunar Customer
     // $cart = Cart::current(); // gets the current session cart
     // $cart->associate($customer);
