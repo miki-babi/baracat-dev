@@ -75,6 +75,8 @@ Route::get('/auth/google/callback', function () {
     ]);
     // Associate the cart with the Lunar Customer
     $cart = CartSession::current();; // gets the current session cart
+    dd($cart);
+
     $cart->associate($customer);
     Auth::login($user);
     // CartSession::setCart($cart);
