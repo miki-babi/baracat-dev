@@ -471,7 +471,9 @@ class CheckoutPage extends Component
 
         Log::info('CheckoutPage: User found', ['user_id' => $user->id, 'user_email' => $user->email]);
 
-        $customer = $user->latestCustomer();
+        // $customer = $user->latestCustomer();
+        $customer = Customer::where('email', $user->email)->first(); // null if not found
+
         
         if (!$customer) {
             Log::info('CheckoutPage: No customer found for user');
