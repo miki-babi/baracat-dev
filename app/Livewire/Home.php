@@ -35,7 +35,7 @@ class Home extends Component
             return $product->thumbnail;
         });
 
-        Log::info('Sale collection images retrieved', ['images' => $saleImages]);
+        // Log::info('Sale collection images retrieved', ['images' => $saleImages]);
         return $saleImages->chunk(2);
     }
 
