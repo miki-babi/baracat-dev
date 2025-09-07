@@ -242,13 +242,23 @@ class CheckoutPage extends Component
      */
     protected function saveAddressToUser($address, string $type): void
     {
-        // Check if user is authenticated
-        if (!auth()->check()) {
+        // Get the current cart
+        $cart = CartSession::current();
+        
+        // Check if cart has an associated user
+        if (!$cart || !$cart->user_id) {
+            return;
+        }
+
+        // Get the user from the cart
+        $user = $cart->user;
+        
+        if (!$user) {
             return;
         }
 
         // Get the current customer from the authenticated user
-        $customer = auth()->user()->latestCustomer();
+        $customer = $user->latestCustomer();
         
         if (!$customer) {
             return;
@@ -376,11 +386,22 @@ class CheckoutPage extends Component
 
     protected function loadSavedAddresses(): void
     {
-        if (!auth()->check()) {
+        // Get the current cart
+        $cart = CartSession::current();
+        
+        // Check if cart has an associated user
+        if (!$cart || !$cart->user_id) {
             return;
         }
 
-        $customer = auth()->user()->latestCustomer();
+        // Get the user from the cart
+        $user = $cart->user;
+        
+        if (!$user) {
+            return;
+        }
+
+        $customer = $user->latestCustomer();
         
         if (!$customer) {
             return;
