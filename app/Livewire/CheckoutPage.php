@@ -475,7 +475,7 @@ class CheckoutPage extends Component
         // $customer = $user->latestCustomer();
         // $customer = LunarUser::where('email', $user->email)->first(); // null if not found
         
-        $customer = Cart::where('user_id', $user->id)->first();
+        $customer = Cart::where('email', $user->email)->first();
         // $userCart = Cart::where('user_id', $user->id)->first();
 
         // $customer = $userCart->customer;
