@@ -75,7 +75,7 @@ Route::get('/auth/google/callback', function () {
     // Optional: persist cart session
     // CartSession::setCart($cart);
 
-    dd($cart);
+    dd($cart, Auth::user());
     // return redirect('/'); // or wherever you want
 });
 
