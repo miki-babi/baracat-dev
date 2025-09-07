@@ -329,12 +329,11 @@ class CheckoutPage extends Component
         ])->authorize();
 
         if ($payment->success) {
-            redirect()->route('checkout-success.view');
-
+            $this->redirect()->route('checkout-success.view');
             return;
         }
 
-        return redirect()->route('checkout-success.view');
+        return $this->redirect()->route('checkout-success.view');
     }
 
     /**
