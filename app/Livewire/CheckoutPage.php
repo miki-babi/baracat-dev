@@ -118,6 +118,9 @@ class CheckoutPage extends Component
 
         $this->billing = $this->cart->billingAddress ?: new CartAddress;
 
+        // NEW: Load saved addresses for authenticated users
+        $this->loadSavedAddresses();
+
         $this->determineCheckoutStep();
     }
 
@@ -228,7 +231,70 @@ class CheckoutPage extends Component
             }
         }
 
+        // NEW: Save address to authenticated user's customer record
+        $this->saveAddressToUser($address, $type);
+
         $this->determineCheckoutStep();
+    }
+
+    /**
+     * Save the address to the authenticated user's customer record
+     */
+    protected function saveAddressToUser($address, string $type): void
+    {
+        // Check if user is authenticated
+        if (!auth()->check()) {
+            return;
+        }
+
+        // Get the current customer from the authenticated user
+        $customer = auth()->user()->latestCustomer();
+        
+        if (!$customer) {
+            return;
+        }
+
+        // Check if this address already exists for the customer
+        $existingAddress = $customer->addresses()
+            ->where('first_name', $address->first_name)
+            ->where('last_name', $address->last_name)
+            ->where('line_one', $address->line_one)
+            ->where('city', $address->city)
+            ->where('postcode', $address->postcode)
+            ->first();
+
+        if ($existingAddress) {
+            // Update existing address
+            $existingAddress->update([
+                'country_id' => $address->country_id,
+                'company_name' => $address->company_name,
+                'line_two' => $address->line_two,
+                'line_three' => $address->line_three,
+                'state' => $address->state,
+                'delivery_instructions' => $address->delivery_instructions,
+                'contact_email' => $address->contact_email,
+                'contact_phone' => $address->contact_phone,
+            ]);
+        } else {
+            // Create new address
+            $customer->addresses()->create([
+                'country_id' => $address->country_id,
+                'first_name' => $address->first_name,
+                'last_name' => $address->last_name,
+                'company_name' => $address->company_name,
+                'line_one' => $address->line_one,
+                'line_two' => $address->line_two,
+                'line_three' => $address->line_three,
+                'city' => $address->city,
+                'state' => $address->state,
+                'postcode' => $address->postcode,
+                'delivery_instructions' => $address->delivery_instructions,
+                'contact_email' => $address->contact_email,
+                'contact_phone' => $address->contact_phone,
+                'shipping_default' => $type === 'shipping',
+                'billing_default' => $type === 'billing',
+            ]);
+        }
     }
 
     /**
@@ -306,5 +372,40 @@ class CheckoutPage extends Component
         Log::info("checkout-page");
         return view('livewire.checkout-page')
             ->layout('layouts.checkout');
+    }
+
+    protected function loadSavedAddresses(): void
+    {
+        if (!auth()->check()) {
+            return;
+        }
+
+        $customer = auth()->user()->latestCustomer();
+        
+        if (!$customer) {
+            return;
+        }
+
+        // Load default shipping address if no cart address exists
+        if (!$this->shipping->id) {
+            $defaultShipping = $customer->addresses()
+                ->where('shipping_default', true)
+                ->first();
+            
+            if ($defaultShipping) {
+                $this->shipping = new CartAddress($defaultShipping->toArray());
+            }
+        }
+
+        // Load default billing address if no cart address exists
+        if (!$this->billing->id) {
+            $defaultBilling = $customer->addresses()
+                ->where('billing_default', true)
+                ->first();
+            
+            if ($defaultBilling) {
+                $this->billing = new CartAddress($defaultBilling->toArray());
+            }
+        }
     }
 }
