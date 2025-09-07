@@ -393,12 +393,12 @@ class CheckoutPage extends Component
 
         if ($payment->success) {
             Log::info('CheckoutPage: Payment successful, attempting redirect to success page');
-            $this->redirect()->route('checkout-success.view');
-            return;
+            return redirect()->route('checkout-success.view');
+            // return;
         }
 
         Log::info('CheckoutPage: Payment failed, but still redirecting to success page');
-        return $this->redirect()->route('checkout-success.view');
+        return redirect()->route('checkout-success.view');
     }
 
     /**
