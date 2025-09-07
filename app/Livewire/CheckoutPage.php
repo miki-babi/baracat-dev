@@ -12,6 +12,7 @@ use Lunar\Models\Cart;
 use Lunar\Models\CartAddress;
 use Lunar\Models\Country;
 use Illuminate\Support\Facades\Log;
+use Lunar\Base\LunarUser;
 
 class CheckoutPage extends Component
 {
@@ -472,7 +473,9 @@ class CheckoutPage extends Component
         Log::info('CheckoutPage: User found', ['user_id' => $user->id, 'user_email' => $user->email]);
 
         // $customer = $user->latestCustomer();
-        $customer = Customer::where('email', $user->email)->first(); // null if not found
+        // $customer = LunarUser::where('email', $user->email)->first(); // null if not found
+        
+        $customer = Cart::where('user_id', $user->id)->first()->customer;
 
         
         if (!$customer) {
