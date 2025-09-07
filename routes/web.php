@@ -29,6 +29,9 @@ Route::get('/', Home::class);
 Route::get('/test', function () {
    dd(Auth::user());
 });
+Route::get('/test', function () {
+    dd(Auth::user());
+ });
 
 Route::get('/collections/{slug}', CollectionPage::class)->name('collection.view');
 
