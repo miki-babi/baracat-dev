@@ -476,15 +476,17 @@ class CheckoutPage extends Component
         // $customer = LunarUser::where('email', $user->email)->first(); // null if not found
         
         // $customer = Cart::where('user_id', $user->id)->first()->customer;
-        $customer = Cart::where('user_id', $user->id)->first();
+        $userCart = Cart::where('user_id', $user->id)->first();
 
-        
+        // $customer = $userCart->customer;
+
         if (!$customer) {
             Log::info('CheckoutPage: No customer found for user');
             return;
         }
 
-        Log::info('CheckoutPage: Customer found', ['customer_id' => $customer->id]);
+        // Log::info('CheckoutPage: Customer found', ['customer_id' => $customer->id]);
+        Log::info('CheckoutPage: Customer found', ['customer_id' => $userCart->customer->id]);
 
         // Load default shipping address if no cart address exists
         if (!$this->shipping->id) {
