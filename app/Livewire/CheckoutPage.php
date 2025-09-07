@@ -298,7 +298,8 @@ class CheckoutPage extends Component
         }
 
         // Get the current customer from the authenticated user
-        $customer = $user->latestCustomer();
+        $customer = Customer::where('email', $user->email)->first();
+
         
         if (!$customer) {
             Log::info('CheckoutPage: No customer found for saving address');
