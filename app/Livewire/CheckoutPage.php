@@ -11,6 +11,7 @@ use Lunar\Facades\ShippingManifest;
 use Lunar\Models\Cart;
 use Lunar\Models\CartAddress;
 use Lunar\Models\Country;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutPage extends Component
 {
@@ -302,6 +303,7 @@ class CheckoutPage extends Component
 
     public function render(): View
     {
+        Log::info("checkout-page");
         return view('livewire.checkout-page')
             ->layout('layouts.checkout');
     }

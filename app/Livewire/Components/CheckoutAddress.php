@@ -118,7 +118,7 @@ class CheckoutAddress extends Component
 
     public function render(): View
     {
-        Log::info("checkout-address");
+        // Log::info("checkout-address");
         return view('livewire.components.checkout-address');
     }
 }
