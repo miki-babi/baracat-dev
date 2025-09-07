@@ -486,8 +486,8 @@ class CheckoutPage extends Component
             return;
         }
 
-        // Log::info('CheckoutPage: Customer found', ['customer_id' => $customer->id]);
-        Log::info('CheckoutPage: Customer found', ['customer_id' => $customer->customer->id]);
+        Log::info('CheckoutPage: Customer found'. $customer);
+        // Log::info('CheckoutPage: Customer found', ['customer_id' => $customer->customer->id]);
 
         // Load default shipping address if no cart address exists
         if (!$this->shipping->id) {
