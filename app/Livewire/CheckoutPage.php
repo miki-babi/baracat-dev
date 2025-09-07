@@ -277,7 +277,7 @@ class CheckoutPage extends Component
     {
         Log::info('CheckoutPage: Saving address to user', [
             'type' => $type,
-            'address' => $address->toArray()
+            'address' => $address
         ]);
         
         // Get the current cart
