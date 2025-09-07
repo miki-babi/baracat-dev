@@ -38,7 +38,7 @@ class Cart extends Component
      */
     public function getCartProperty()
     {
-        // Log::info(CartSession::current());
+        Log::info(CartSession::current());
         return CartSession::current();
     }
 
