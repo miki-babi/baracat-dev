@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,7 +52,7 @@ use Lunar\Models\Customer;
 use Lunar\Models\Cart;
 use Lunar\Facades\CartSession;
 
-Route::get('/auth/google/callback', function () {
+Route::get('/auth/google/callback', function (Request $request) {
     $googleUser = Socialite::driver('google')->user();
 
     // Create or update local user
@@ -66,6 +67,7 @@ Route::get('/auth/google/callback', function () {
     // Log the user in (this generates a Laravel session)
     Auth::login($user);
 
+    $request->session()->regenerate();
     // Get the current cart session
     $cart = CartSession::current();
 
