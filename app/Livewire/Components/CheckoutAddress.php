@@ -8,6 +8,7 @@ use Lunar\Facades\CartSession;
 use Lunar\Models\Cart;
 use Lunar\Models\CartAddress;
 use Lunar\Models\Country;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutAddress extends Component
 {
@@ -34,7 +35,7 @@ class CheckoutAddress extends Component
     /**
      * Whether billing is the same as shipping.
      */
-    public bool $shippingIsBilling = false;
+    public bool $shippingIsBilling = true;
 
     protected $listeners = [
         'refreshAddress',
@@ -111,6 +112,7 @@ class CheckoutAddress extends Component
 
     public function getCountriesProperty()
     {
+        Log::info(Country::whereIn('iso3', ['GBR', 'USA'])->get());
         return Country::whereIn('iso3', ['GBR', 'USA'])->get();
     }
 

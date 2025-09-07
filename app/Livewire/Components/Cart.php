@@ -3,6 +3,7 @@
 namespace App\Livewire\Components;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Livewire\Component;
 use Lunar\Facades\CartSession;
@@ -37,6 +38,7 @@ class Cart extends Component
      */
     public function getCartProperty()
     {
+        Log::info(CartSession::current());
         return CartSession::current();
     }
 
