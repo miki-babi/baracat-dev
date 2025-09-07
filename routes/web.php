@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Artisan;
 
 Route::get('/', Home::class);
 Route::get('/test', function () {
-    return Auth::user();
+   dd(Auth::user());
 });
 
 Route::get('/collections/{slug}', CollectionPage::class)->name('collection.view');
