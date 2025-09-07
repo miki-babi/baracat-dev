@@ -100,7 +100,7 @@ Route::get('/auth/google/callback', function (\Illuminate\Http\Request $request)
 
     // Ensure Lunar Customer exists for this user
     $customer = \Lunar\Models\Customer::firstOrCreate(
-        ['user_id' => $user->id],
+        ['id' => $user->id],
         [
             'title' => 'Mr.',
             'first_name' => $user->name,
