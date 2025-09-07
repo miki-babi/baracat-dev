@@ -275,9 +275,12 @@ class CheckoutPage extends Component
      */
     protected function saveAddressToUser($address, string $type): void
     {
+        // Normalize to array
+        $addr = is_array($address) ? $address : (method_exists($address, 'toArray') ? $address->toArray() : (array) $address);
+
         Log::info('CheckoutPage: Saving address to user', [
             'type' => $type,
-            'address' => $address
+            'address' => $addr,
         ]);
         
         // Get the current cart
@@ -291,7 +294,6 @@ class CheckoutPage extends Component
 
         // Get the user from the cart
         $user = $cart->user;
-        
         if (!$user) {
             Log::info('CheckoutPage: User not found for saving address');
             return;
@@ -313,43 +315,43 @@ class CheckoutPage extends Component
 
         // Check if this address already exists for the customer
         $existingAddress = $customer->addresses()
-            ->where('first_name', $address->first_name)
-            ->where('last_name', $address->last_name)
-            ->where('line_one', $address->line_one)
-            ->where('city', $address->city)
-            ->where('postcode', $address->postcode)
+            ->where('first_name', $addr['first_name'] ?? null)
+            ->where('last_name', $addr['last_name'] ?? null)
+            ->where('line_one', $addr['line_one'] ?? null)
+            ->where('city', $addr['city'] ?? null)
+            ->where('postcode', $addr['postcode'] ?? null)
             ->first();
 
         if ($existingAddress) {
             Log::info('CheckoutPage: Updating existing address', ['address_id' => $existingAddress->id]);
             // Update existing address
             $existingAddress->update([
-                'country_id' => $address->country_id,
-                'company_name' => $address->company_name,
-                'line_two' => $address->line_two,
-                'line_three' => $address->line_three,
-                'state' => $address->state,
-                'delivery_instructions' => $address->delivery_instructions,
-                'contact_email' => $address->contact_email,
-                'contact_phone' => $address->contact_phone,
+                'country_id' => $addr['country_id'] ?? null,
+                'company_name' => $addr['company_name'] ?? null,
+                'line_two' => $addr['line_two'] ?? null,
+                'line_three' => $addr['line_three'] ?? null,
+                'state' => $addr['state'] ?? null,
+                'delivery_instructions' => $addr['delivery_instructions'] ?? null,
+                'contact_email' => $addr['contact_email'] ?? null,
+                'contact_phone' => $addr['contact_phone'] ?? null,
             ]);
         } else {
             Log::info('CheckoutPage: Creating new address');
             // Create new address
             $newAddress = $customer->addresses()->create([
-                'country_id' => $address->country_id,
-                'first_name' => $address->first_name,
-                'last_name' => $address->last_name,
-                'company_name' => $address->company_name,
-                'line_one' => $address->line_one,
-                'line_two' => $address->line_two,
-                'line_three' => $address->line_three,
-                'city' => $address->city,
-                'state' => $address->state,
-                'postcode' => $address->postcode,
-                'delivery_instructions' => $address->delivery_instructions,
-                'contact_email' => $address->contact_email,
-                'contact_phone' => $address->contact_phone,
+                'country_id' => $addr['country_id'] ?? null,
+                'first_name' => $addr['first_name'] ?? '',
+                'last_name' => $addr['last_name'] ?? '',
+                'company_name' => $addr['company_name'] ?? null,
+                'line_one' => $addr['line_one'] ?? '',
+                'line_two' => $addr['line_two'] ?? null,
+                'line_three' => $addr['line_three'] ?? null,
+                'city' => $addr['city'] ?? '',
+                'state' => $addr['state'] ?? null,
+                'postcode' => $addr['postcode'] ?? null,
+                'delivery_instructions' => $addr['delivery_instructions'] ?? null,
+                'contact_email' => $addr['contact_email'] ?? null,
+                'contact_phone' => $addr['contact_phone'] ?? null,
                 'shipping_default' => $type === 'shipping',
                 'billing_default' => $type === 'billing',
             ]);
