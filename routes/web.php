@@ -104,7 +104,7 @@ Route::get('/auth/google/callback', function (\Illuminate\Http\Request $request)
         [
             'title' => 'Mr.',
             'first_name' => explode(' ', $user->name)[0] ?? '',
-            'last_name' => explode(' ', $user->name)[1] ?? '',
+            'last_name' => explode(' ', $user->name)[1] ?? ' ',
         ]
     );
 
