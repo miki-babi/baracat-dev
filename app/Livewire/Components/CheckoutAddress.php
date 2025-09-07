@@ -112,12 +112,13 @@ class CheckoutAddress extends Component
 
     public function getCountriesProperty()
     {
-        Log::info(Country::whereIn('iso3', ['GBR', 'USA'])->get());
+        // Log::info(Country::whereIn('iso3', ['GBR', 'USA'])->get());
         return Country::whereIn('iso3', ['GBR', 'USA'])->get();
     }
 
     public function render(): View
     {
+        Log::info("checkout-address");
         return view('livewire.components.checkout-address');
     }
 }
