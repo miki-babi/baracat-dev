@@ -111,7 +111,7 @@ Route::get('/auth/google/callback', function (\Illuminate\Http\Request $request)
     // Attach current cart to this user
     $cart = \Lunar\Facades\CartSession::current();
     $cart->associate($user);
-    \Lunar\Facades\CartSession::setCart($cart);
+    // \Lunar\Facades\CartSession::setCart($cart);
 
     return redirect('/test'); // or your homepage
 });
