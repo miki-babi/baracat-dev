@@ -242,7 +242,7 @@ if (!$customer) {
         'first_name' => $firstName,
         'last_name' => $lastName,
         'company_name' => $user->name,
-        'vat_no' => null,
+        'attribute_data'=>[],
         'meta' => [
             'account_no' => $user->id
         ],
