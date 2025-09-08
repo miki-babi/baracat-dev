@@ -402,7 +402,7 @@ class CheckoutPage extends Component
         ]);
 
         CartSession::setCustomer(Customer::where('id',$this->cart->user_id )->first());
-        Log::info(CartSession::getCustomer());
+        Log::info(CartSession::current());
         
 
         if ($payment->success) {
