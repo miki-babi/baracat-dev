@@ -145,6 +145,7 @@ Route::get('/auth/google/callback', function (Request $request) {
             'email'      => $user->email,
         ]
     );
+    dd($customer->toArray(), $customer->exists, $customer->id);
 
     // ✅ Attach current cart to this customer
     $cart = CartSession::current();
