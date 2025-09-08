@@ -147,8 +147,8 @@ Route::get('/auth/google/callback', function (Request $request) {
 
     // 4️⃣ Lunar customer
     $nameParts = explode(' ', $user->name);
-    $firstName = $nameParts[0] ?? '';
-    $lastName  = $nameParts[1] ?? '';
+    $firstName = $nameParts[0] ?? 'Not-set';
+    $lastName  = $nameParts[1] ?? 'Not-set';
 
     $customer = Customer::firstOrCreate(
         ['account_ref' => $user->id],
