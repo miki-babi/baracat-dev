@@ -396,6 +396,12 @@ class CheckoutPage extends Component
             'user_id' => $this->cart->user_id,
             'customer_id' => $this->cart->customer_id,
         ]);
+        Log::info('CheckoutPage: Payment customer', [
+            'customer' => $payment->customer,
+        ]);
+
+        // CartSession::setCustomer($payment->customer);
+        
 
         if ($payment->success) {
             Log::info('CheckoutPage: Payment successful, attempting redirect to success page');
