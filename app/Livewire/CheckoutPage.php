@@ -401,7 +401,9 @@ class CheckoutPage extends Component
             'customer' => Customer::where('id',$this->cart->user_id )->first(),
         ]);
 
-        CartSession::setCustomer(Customer::where('id',$this->cart->user_id ));
+        $customer=Customer::where('id',$this->cart->user_id );
+dd(get_class($customer));
+        CartSession::setCustomer($customer);
         Log::info(CartSession::current());
         
 
