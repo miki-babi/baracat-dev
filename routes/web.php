@@ -228,28 +228,31 @@ Route::get('/auth/google/callback', function (Request $request) {
     $firstName = $nameParts[0] ?? '';
     $lastName  = $nameParts[1] ?? '';
 
-    $customer = Customer::firstOrCreate(
-        ['account_ref' => $user->id],
-        [
-            'title'          => 'Mr.',
-            'first_name'     => $firstName,
-            'last_name'      => $lastName,
-            'attribute_data' => ['email' => $user->email], // MUST be array, not string
-        ]
-    );
-    Log::info("Customer created/fetched", [
-        'id'    => $customer->id,
-        'type'  => gettype($customer),
-        'class' => is_object($customer) ? get_class($customer) : 'NOT AN OBJECT',
+// 1️⃣ Check if customer already exists
+$customer = Customer::where('account_ref', $user->id)->first();
+
+if (!$customer) {
+    // 2️⃣ Create customer if not found
+    $nameParts = explode(' ', $user->name);
+    $firstName = $nameParts[0] ?? '';
+    $lastName  = $nameParts[1] ?? '';
+
+    $customer = Customer::create([
+        'account_ref'    => $user->id,
+        'title'          => 'Mr.',
+        'first_name'     => $firstName,
+        'last_name'      => $lastName,
+        'attribute_data' => ['email' => $user->email],
     ]);
+}
 
-    // 4️⃣a Ensure customer is linked to user
-    $customer->users()->syncWithoutDetaching([$user->id]);
+// 3️⃣ Ensure customer is linked to user
+$customer->users()->syncWithoutDetaching([$user->id]);
 
-    // 4️⃣b Ensure customer belongs to at least one group
-    if ($customer->customerGroups()->count() === 0) {
-        $customer->customerGroups()->sync([1]); // default group ID
-    }
+// 4️⃣ Ensure customer belongs to at least one group
+if ($customer->customerGroups()->count() === 0) {
+    $customer->customerGroups()->sync([1]); // default group
+}
 
     // 5️⃣ Ensure there is a cart session
     $cart = CartSession::current() ?? CartSession::create();
@@ -264,7 +267,7 @@ Route::get('/auth/google/callback', function (Request $request) {
         'customer_type' => gettype($customer),
         'customer_class'=> is_object($customer) ? get_class($customer) : 'NOT AN OBJECT'
     ]);
-    CartSession::setCustomer($customer);
+    // CartSession::setCustomer($customer);
 
     // 7️⃣ Attach user to the same cart
     $cart = CartSession::current(); // re-fetch to ensure session cart
