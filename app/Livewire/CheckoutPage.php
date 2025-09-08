@@ -397,7 +397,7 @@ class CheckoutPage extends Component
             'customer_id' => $this->cart->customer_id,
         ]);
         Log::info('CheckoutPage: Payment customer', [
-            'customer' => $this->$cart->customer,
+            'customer' => $this->cart->customer,
         ]);
 
         // CartSession::setCustomer($payment->customer);
