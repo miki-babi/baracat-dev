@@ -130,7 +130,7 @@ class CheckoutPage extends Component
 
             if ($payment->success) {
                 Log::info('CheckoutPage: Payment successful, redirecting to success page');
-                $this->redirect()->route('checkout-success.view');
+                // return redirect()->route('checkout-success.view');
                 return;
             }
         }
@@ -391,7 +391,10 @@ class CheckoutPage extends Component
             'success' => $payment->success,
             'message' => $payment->message ?? 'No message',
             'status' => $payment->status ?? 'No status',
-            'payment_id' => $payment->id ?? 'No payment ID'
+            'payment_id' => $payment->id ?? 'No payment ID',
+            'cart_id' => $this->cart->id,
+            'user_id' => $this->cart->user_id,
+            'customer_id' => $this->cart->customer_id,
         ]);
 
         if ($payment->success) {
@@ -447,8 +450,9 @@ class CheckoutPage extends Component
     public function render(): View
     {
         Log::info("checkout-page");
-        return view('livewire.checkout-page')
-            ->layout('layouts.checkout');
+        return view('livewire.checkout-page', [
+            'layout' => 'layouts.checkout'
+        ]);
     }
 
     protected function loadSavedAddresses(): void
