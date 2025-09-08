@@ -85,7 +85,41 @@ use Lunar\Facades\CartSession;
 //     // return redirect('/'); // or wherever you want
 // });
 
-Route::get('/auth/google/callback', function (\Illuminate\Http\Request $request) {
+// Route::get('/auth/google/callback', function (\Illuminate\Http\Request $request) {
+//     $googleUser = Socialite::driver('google')->user();
+
+//     // Create or update local user
+//     $user = User::updateOrCreate(
+//         ['google_id' => $googleUser->id],
+//         [
+//             'name' => $googleUser->name,
+//             'email' => $googleUser->email,
+//         ]
+//     );
+
+//     // Login and regenerate session
+//     Auth::login($user);
+//     $request->session()->regenerate();
+
+//     // Ensure Lunar Customer exists for this user
+//     $customer = \Lunar\Models\Customer::firstOrCreate(
+//         ['id' => $user->id],
+//         [
+//             'title' => 'Mr.',
+//             'first_name' => explode(' ', $user->name)[0] ?? '',
+//             'last_name' => explode(' ', $user->name)[1] ?? ' ',
+//         ]
+//     );
+
+//     // Attach current cart to this user
+//     $cart = \Lunar\Facades\CartSession::current();
+//     $cart->associate($user);
+//     // \Lunar\Facades\CartSession::setCart($cart);
+
+//     return redirect('/test'); // or your homepage
+// });
+
+Route::get('/auth/google/callback', function (Request $request) {
     $googleUser = Socialite::driver('google')->user();
 
     // Create or update local user
@@ -101,24 +135,26 @@ Route::get('/auth/google/callback', function (\Illuminate\Http\Request $request)
     Auth::login($user);
     $request->session()->regenerate();
 
-    // Ensure Lunar Customer exists for this user
-    $customer = \Lunar\Models\Customer::firstOrCreate(
-        ['id' => $user->id],
+    // ✅ Ensure Lunar Customer exists for this user
+    $customer = Customer::firstOrCreate(
+        ['user_id' => $user->id], // correct way
         [
             'title' => 'Mr.',
             'first_name' => explode(' ', $user->name)[0] ?? '',
-            'last_name' => explode(' ', $user->name)[1] ?? ' ',
+            'last_name'  => explode(' ', $user->name)[1] ?? '',
+            'email'      => $user->email,
         ]
     );
 
-    // Attach current cart to this user
-    $cart = \Lunar\Facades\CartSession::current();
-    $cart->associate($user);
-    // \Lunar\Facades\CartSession::setCart($cart);
+    // ✅ Attach current cart to this customer
+    $cart = CartSession::current();
+    if ($cart) {
+        CartSession::setCustomer($customer);
+        $cart->associate($user); // still ties to user_id
+    }
 
     return redirect('/test'); // or your homepage
 });
-
 
 // Route::get('/lunar/admin', function () {
 //     if(!Auth::check()) {
