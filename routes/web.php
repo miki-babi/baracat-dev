@@ -237,12 +237,15 @@ if (!$customer) {
     $firstName = $nameParts[0] ?? '';
     $lastName  = $nameParts[1] ?? '';
 
-    $customer = Customer::create([
-        'account_ref'    => $user->id,
-        'title'          => 'Mr.',
-        'first_name'     => $firstName,
-        'last_name'      => $lastName,
-        'attribute_data' => ['email' => $user->email],
+    $customer = Lunar\Models\Customer::create([
+        'title' => 'Mr.',
+        'first_name' => $firstName,
+        'last_name' => $lastName,
+        'company_name' => $user->name,
+        'vat_no' => null,
+        'meta' => [
+            'account_no' => $user->id
+        ],
     ]);
 }
 
