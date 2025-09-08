@@ -182,6 +182,13 @@ Route::get('/auth/google/callback', function (Request $request) {
         'customer_type' => gettype($customer),
         'customer_class'=> is_object($customer) ? get_class($customer) : 'NOT AN OBJECT'
     ]);
+    // Ensure customer is linked to current user
+$customer->users()->syncWithoutDetaching([$user->id]);
+
+// Ensure customer is in at least one group (id=1 is usually "Retail")
+if ($customer->customerGroups()->count() === 0) {
+    $customer->customerGroups()->sync([1]);
+}
     CartSession::setCustomer($customer);
 
     // 7️⃣ Attach user
