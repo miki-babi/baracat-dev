@@ -144,14 +144,14 @@ Route::get('/auth/google/callback', function (Request $request) {
 
     // dd($user->email);
     $attriData= ['email'=> $user->email];
-    dd($attriData);
+    // dd($attriData);
     $customer = Customer::firstOrCreate(
         ['account_ref' => $user->id], // link via unique account_ref
         [
             'title'      => 'Mr.',
             'first_name' => $firstName,
             'last_name'  => $lastName,
-            'attribute_data'       => ['email' => $user->email],
+            'attribute_data'       => $attriData,
         ]
     );
 
