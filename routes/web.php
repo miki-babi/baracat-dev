@@ -148,7 +148,7 @@ Route::get('/auth/google/callback', function (Request $request) {
             'title'      => 'Mr.',
             'first_name' => $firstName,
             'last_name'  => $lastName,
-            'meta'       => ['email' => $user->email],
+            'attribute_data'       => ['email' => $user->email],
         ]
     );
 
