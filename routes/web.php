@@ -234,8 +234,8 @@ $customer = Customer::where('account_ref', $user->id)->first();
 if (!$customer) {
     // 2️⃣ Create customer if not found
     $nameParts = explode(' ', $user->name);
-    $firstName = $nameParts[0] ?? '';
-    $lastName  = $nameParts[1] ?? '';
+    $firstName = $nameParts[0] ?? 'NaN';
+    $lastName  = $nameParts[1] ?? 'NaN';
 
     $customer = Lunar\Models\Customer::create([
         'title' => 'Mr.',
