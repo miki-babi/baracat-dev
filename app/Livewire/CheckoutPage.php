@@ -396,8 +396,9 @@ class CheckoutPage extends Component
             'user_id' => $this->cart->user_id,
             'customer_id' => $this->cart->customer_id,
         ]);
+        // $customer = Customer::where('user_id',$this->cart->user_id )->first();
         Log::info('CheckoutPage: Payment customer', [
-            'customer' => $this->cart->customer,
+            'customer' => Customer::where('user_id',$this->cart->user_id )->first(),
         ]);
 
         // CartSession::setCustomer($payment->customer);
