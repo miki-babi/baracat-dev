@@ -137,7 +137,7 @@ Route::get('/auth/google/callback', function (Request $request) {
 
     // ✅ Ensure Lunar Customer exists for this user
     $customer = Customer::firstOrCreate(
-        ['id' => $user->id], // correct way
+        ['account_ref' => $user->id], // correct way
         [
             'title' => 'Mr.',
             'first_name' => explode(' ', $user->name)[0] ?? '',
