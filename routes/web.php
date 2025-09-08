@@ -29,7 +29,7 @@ Route::get('/', Home::class);
 Route::get('/test', function () {
    dd(Auth::user());
 });
-Route::get('/test', function () {
+Route::get('/test2', function () {
     dd(Auth::user());
  });
 
