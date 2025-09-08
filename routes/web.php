@@ -142,7 +142,7 @@ Route::get('/auth/google/callback', function (Request $request) {
     $firstName = $nameParts[0] ?? '';
     $lastName = $nameParts[1] ?? '';
 
-    dd($user->email);
+    // dd($user->email);
     $customer = Customer::firstOrCreate(
         ['account_ref' => $user->id], // link via unique account_ref
         [
