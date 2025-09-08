@@ -150,21 +150,21 @@ Route::get('/auth/google/callback', function (Request $request) {
     $firstName = $nameParts[0] ?? 'Not-set';
     $lastName  = $nameParts[1] ?? 'Not-set';
 
-    $customer = Customer::firstOrCreate(
-        ['account_ref' => $user->id],
-        [
-            'title'      => 'Mr.',
-            'first_name' => $firstName,
-            'last_name'  => $lastName,
-            'attribute_data'=>[[]],
-            'meta'       => ['email' => $user->email],
-        ]
-    );
-    Log::info("Customer created/fetched", [
-        'id'    => $customer->id,
-        'type'  => gettype($customer),
-        'class' => is_object($customer) ? get_class($customer) : 'NOT AN OBJECT',
-    ]);
+    // $customer = Customer::firstOrCreate(
+    //     ['account_ref' => $user->id],
+    //     [
+    //         'title'      => 'Mr.',
+    //         'first_name' => $firstName,
+    //         'last_name'  => $lastName,
+    //         'attribute_data'=>[[]],
+    //         'meta'       => ['email' => $user->email],
+    //     ]
+    // );
+    // Log::info("Customer created/fetched", [
+    //     'id'    => $customer->id,
+    //     'type'  => gettype($customer),
+    //     'class' => is_object($customer) ? get_class($customer) : 'NOT AN OBJECT',
+    // ]);
 
     // 5️⃣ Cart
     $cart = CartSession::current();
@@ -178,19 +178,19 @@ Route::get('/auth/google/callback', function (Request $request) {
         'class' => get_class($cart),
     ]);
 
-    // 6️⃣ Attach customer
-    Log::info("➡️ About to attach customer", [
-        'customer_type' => gettype($customer),
-        'customer_class'=> is_object($customer) ? get_class($customer) : 'NOT AN OBJECT'
-    ]);
-    // Ensure customer is linked to current user
-$customer->users()->syncWithoutDetaching([$user->id]);
+    // // 6️⃣ Attach customer
+    // Log::info("➡️ About to attach customer", [
+    //     'customer_type' => gettype($customer),
+    //     'customer_class'=> is_object($customer) ? get_class($customer) : 'NOT AN OBJECT'
+    // ]);
+//     // Ensure customer is linked to current user
+// $customer->users()->syncWithoutDetaching([$user->id]);
 
-// Ensure customer is in at least one group (id=1 is usually "Retail")
-if ($customer->customerGroups()->count() === 0) {
-    $customer->customerGroups()->sync([1]);
-}
-    CartSession::setCustomer($customer);
+// // Ensure customer is in at least one group (id=1 is usually "Retail")
+// if ($customer->customerGroups()->count() === 0) {
+//     $customer->customerGroups()->sync([1]);
+// }
+//     CartSession::setCustomer($customer);
 
     // 7️⃣ Attach user
     $cart = CartSession::current(); // refresh
