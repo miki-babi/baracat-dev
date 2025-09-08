@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -121,10 +124,13 @@ use Lunar\Facades\CartSession;
 
 
 Route::get('/auth/google/callback', function (Request $request) {
-    // 1️⃣ Get user from Google
-    $googleUser = Socialite::driver('google')->user();
+    Log::info("🔵 Step 1: Starting Google callback");
 
-    // 2️⃣ Create or update local User
+    // 1️⃣ Google user
+    $googleUser = Socialite::driver('google')->user();
+    Log::info("Google user", ['type' => gettype($googleUser), 'class' => get_class($googleUser)]);
+
+    // 2️⃣ Local user
     $user = User::updateOrCreate(
         ['google_id' => $googleUser->id],
         [
@@ -132,46 +138,58 @@ Route::get('/auth/google/callback', function (Request $request) {
             'email' => $googleUser->email,
         ]
     );
+    Log::info("Local User", ['id' => $user->id, 'type' => gettype($user), 'class' => get_class($user)]);
 
-    // 3️⃣ Login user and regenerate session
+    // 3️⃣ Login
     Auth::login($user);
     $request->session()->regenerate();
+    Log::info("✅ Logged in user {$user->id}");
 
-    // 4️⃣ Ensure a Lunar Customer exists
+    // 4️⃣ Lunar customer
     $nameParts = explode(' ', $user->name);
     $firstName = $nameParts[0] ?? '';
-    $lastName = $nameParts[1] ?? '';
+    $lastName  = $nameParts[1] ?? '';
 
-    // dd($user->email);
-    $attriData= ['email'=> $user->email];
-    // dd($attriData);
     $customer = Customer::firstOrCreate(
-        ['account_ref' => $user->id], // link via unique account_ref
+        ['account_ref' => $user->id],
         [
             'title'      => 'Mr.',
             'first_name' => $firstName,
             'last_name'  => $lastName,
-            'attribute_data'       => $attriData,
+            'meta'       => ['email' => $user->email],
         ]
     );
+    Log::info("Customer created/fetched", [
+        'id'    => $customer->id,
+        'type'  => gettype($customer),
+        'class' => is_object($customer) ? get_class($customer) : 'NOT AN OBJECT',
+    ]);
 
-    dd(typeOf($customer));
-
-    // 5️⃣ Ensure there is a cart session
+    // 5️⃣ Cart
     $cart = CartSession::current();
     if (!$cart) {
+        Log::info("No cart found → creating new");
         $cart = CartSession::create();
     }
+    Log::info("Cart before attach", [
+        'id'    => $cart->id,
+        'type'  => gettype($cart),
+        'class' => get_class($cart),
+    ]);
 
-    // 6️⃣ Attach customer to cart session
+    // 6️⃣ Attach customer
+    Log::info("➡️ About to attach customer", [
+        'customer_type' => gettype($customer),
+        'customer_class'=> is_object($customer) ? get_class($customer) : 'NOT AN OBJECT'
+    ]);
     CartSession::setCustomer($customer);
 
-    // 7️⃣ Attach user to the same cart
-    $cart = CartSession::current(); // re-fetch to ensure session cart
+    // 7️⃣ Attach user
+    $cart = CartSession::current(); // refresh
     $cart->user()->associate($user);
     $cart->save();
+    Log::info("✅ User associated to cart", ['cart_id' => $cart->id, 'user_id' => $user->id]);
 
-    // 8️⃣ Redirect after login
     return redirect('/test');
 });
 
