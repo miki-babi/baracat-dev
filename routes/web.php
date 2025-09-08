@@ -30,11 +30,11 @@ use Illuminate\Support\Facades\Log;
 
 Route::get('/', Home::class);
 Route::get('/test', function () {
-   dd(Auth::user());
+    dd(Auth::user());
 });
 Route::get('/test2', function () {
     dd(Auth::user());
- });
+});
 
 Route::get('/collections/{slug}', CollectionPage::class)->name('collection.view');
 
@@ -123,84 +123,157 @@ use Lunar\Facades\CartSession;
 // });
 
 
+// Route::get('/auth/google/callback', function (Request $request) {
+//     Log::info("🔵 Step 1: Starting Google callback");
+
+//     // 1️⃣ Google user
+//     $googleUser = Socialite::driver('google')->user();
+//     Log::info("Google user", ['type' => gettype($googleUser), 'class' => get_class($googleUser)]);
+
+//     // 2️⃣ Local user
+//     $user = User::updateOrCreate(
+//         ['google_id' => $googleUser->id],
+//         [
+//             'name' => $googleUser->name,
+//             'email' => $googleUser->email,
+//         ]
+//     );
+//     Log::info("Local User", ['id' => $user->id, 'type' => gettype($user), 'class' => get_class($user)]);
+
+//     // 3️⃣ Login
+//     Auth::login($user);
+//     $request->session()->regenerate();
+//     Log::info("✅ Logged in user {$user->id}");
+
+//     // 4️⃣ Lunar customer
+//     $nameParts = explode(' ', $user->name);
+//     $firstName = $nameParts[0] ?? 'Not-set';
+//     $lastName  = $nameParts[1] ?? 'Not-set';
+
+//     // $customer = Customer::firstOrCreate(
+//     //     ['account_ref' => $user->id],
+//     //     [
+//     //         'title'      => 'Mr.',
+//     //         'first_name' => $firstName,
+//     //         'last_name'  => $lastName,
+//     //         'attribute_data'=>[[]],
+//     //         'meta'       => ['email' => $user->email],
+//     //     ]
+//     // );
+//     // Log::info("Customer created/fetched", [
+//     //     'id'    => $customer->id,
+//     //     'type'  => gettype($customer),
+//     //     'class' => is_object($customer) ? get_class($customer) : 'NOT AN OBJECT',
+//     // ]);
+
+//     // 5️⃣ Cart
+//     $cart = CartSession::current();
+//     if (!$cart) {
+//         Log::info("No cart found → creating new");
+//         $cart = CartSession::create();
+//     }
+//     Log::info("Cart before attach", [
+//         'id'    => $cart->id,
+//         'type'  => gettype($cart),
+//         'class' => get_class($cart),
+//     ]);
+
+//     // // 6️⃣ Attach customer
+//     // Log::info("➡️ About to attach customer", [
+//     //     'customer_type' => gettype($customer),
+//     //     'customer_class'=> is_object($customer) ? get_class($customer) : 'NOT AN OBJECT'
+//     // ]);
+//     //     // Ensure customer is linked to current user
+//     // $customer->users()->syncWithoutDetaching([$user->id]);
+
+//     // // Ensure customer is in at least one group (id=1 is usually "Retail")
+//     // if ($customer->customerGroups()->count() === 0) {
+//     //     $customer->customerGroups()->sync([1]);
+//     // }
+//     //     CartSession::setCustomer($customer);
+
+//     // 7️⃣ Attach user
+//     $cart = CartSession::current(); // refresh
+//     $cart->user()->associate($user);
+//     $cart->save();
+//     Log::info("✅ User associated to cart", ['cart_id' => $cart->id, 'user_id' => $user->id]);
+
+//     return redirect('/test');
+// });
+
 Route::get('/auth/google/callback', function (Request $request) {
     Log::info("🔵 Step 1: Starting Google callback");
 
-    // 1️⃣ Google user
+    // 1️⃣ Get Google user
     $googleUser = Socialite::driver('google')->user();
     Log::info("Google user", ['type' => gettype($googleUser), 'class' => get_class($googleUser)]);
 
-    // 2️⃣ Local user
+    // 2️⃣ Create or update local User
     $user = User::updateOrCreate(
         ['google_id' => $googleUser->id],
         [
-            'name' => $googleUser->name,
+            'name'  => $googleUser->name,
             'email' => $googleUser->email,
         ]
     );
     Log::info("Local User", ['id' => $user->id, 'type' => gettype($user), 'class' => get_class($user)]);
 
-    // 3️⃣ Login
+    // 3️⃣ Login user and regenerate session
     Auth::login($user);
     $request->session()->regenerate();
     Log::info("✅ Logged in user {$user->id}");
 
-    // 4️⃣ Lunar customer
+    // 4️⃣ Ensure a Lunar Customer exists
     $nameParts = explode(' ', $user->name);
-    $firstName = $nameParts[0] ?? 'Not-set';
-    $lastName  = $nameParts[1] ?? 'Not-set';
+    $firstName = $nameParts[0] ?? '';
+    $lastName  = $nameParts[1] ?? '';
 
-    // $customer = Customer::firstOrCreate(
-    //     ['account_ref' => $user->id],
-    //     [
-    //         'title'      => 'Mr.',
-    //         'first_name' => $firstName,
-    //         'last_name'  => $lastName,
-    //         'attribute_data'=>[[]],
-    //         'meta'       => ['email' => $user->email],
-    //     ]
-    // );
-    // Log::info("Customer created/fetched", [
-    //     'id'    => $customer->id,
-    //     'type'  => gettype($customer),
-    //     'class' => is_object($customer) ? get_class($customer) : 'NOT AN OBJECT',
-    // ]);
+    $customer = Customer::firstOrCreate(
+        ['account_ref' => $user->id],
+        [
+            'title'          => 'Mr.',
+            'first_name'     => $firstName,
+            'last_name'      => $lastName,
+            'attribute_data' => ['email' => $user->email], // MUST be array, not string
+        ]
+    );
+    Log::info("Customer created/fetched", [
+        'id'    => $customer->id,
+        'type'  => gettype($customer),
+        'class' => is_object($customer) ? get_class($customer) : 'NOT AN OBJECT',
+    ]);
 
-    // 5️⃣ Cart
-    $cart = CartSession::current();
-    if (!$cart) {
-        Log::info("No cart found → creating new");
-        $cart = CartSession::create();
+    // 4️⃣a Ensure customer is linked to user
+    $customer->users()->syncWithoutDetaching([$user->id]);
+
+    // 4️⃣b Ensure customer belongs to at least one group
+    if ($customer->customerGroups()->count() === 0) {
+        $customer->customerGroups()->sync([1]); // default group ID
     }
+
+    // 5️⃣ Ensure there is a cart session
+    $cart = CartSession::current() ?? CartSession::create();
     Log::info("Cart before attach", [
         'id'    => $cart->id,
         'type'  => gettype($cart),
         'class' => get_class($cart),
     ]);
 
-    // // 6️⃣ Attach customer
-    // Log::info("➡️ About to attach customer", [
-    //     'customer_type' => gettype($customer),
-    //     'customer_class'=> is_object($customer) ? get_class($customer) : 'NOT AN OBJECT'
-    // ]);
-//     // Ensure customer is linked to current user
-// $customer->users()->syncWithoutDetaching([$user->id]);
+    // 6️⃣ Attach customer to cart session
+    Log::info("➡️ About to attach customer", [
+        'customer_type' => gettype($customer),
+        'customer_class'=> is_object($customer) ? get_class($customer) : 'NOT AN OBJECT'
+    ]);
+    CartSession::setCustomer($customer);
 
-// // Ensure customer is in at least one group (id=1 is usually "Retail")
-// if ($customer->customerGroups()->count() === 0) {
-//     $customer->customerGroups()->sync([1]);
-// }
-//     CartSession::setCustomer($customer);
-
-    // 7️⃣ Attach user
-    $cart = CartSession::current(); // refresh
+    // 7️⃣ Attach user to the same cart
+    $cart = CartSession::current(); // re-fetch to ensure session cart
     $cart->user()->associate($user);
     $cart->save();
     Log::info("✅ User associated to cart", ['cart_id' => $cart->id, 'user_id' => $user->id]);
 
     return redirect('/test');
 });
-
 // Route::get('/lunar/admin', function () {
 //     if(!Auth::check()) {
 //         // return redirect()->route('login');
@@ -211,7 +284,7 @@ Route::get('/auth/google/callback', function (Request $request) {
 // })->name('lunar.admin');
 
 Route::get('/reset', function () {
-//    $user = User::where('email', 'your@email.com')->first();
+    //    $user = User::where('email', 'your@email.com')->first();
 
     // if ($user) {
     //     $user->password = Hash::make('newpassword123'); // set new password
@@ -239,6 +312,7 @@ Route::get('/make', function () {
 
 // use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+
 Route::get('/reset-storage', function () {
     $link = public_path('storage');
     $source = storage_path('app/uploads'); // <-- change this to your actual image folder
@@ -266,12 +340,12 @@ Route::get('/reset-storage', function () {
     return "❌ Storage link created, but no files found!";
 });
 
-Route::get('/check-storage', function() {
+Route::get('/check-storage', function () {
     $link = public_path('storage');
-    $files = glob($link.'/*');
+    $files = glob($link . '/*');
 
     if (count($files)) {
-        return "✅ Storage has files: ".implode(', ', array_map('basename', $files));
+        return "✅ Storage has files: " . implode(', ', array_map('basename', $files));
     }
     return "❌ Storage is empty!";
 });
