@@ -155,6 +155,8 @@ Route::get('/auth/google/callback', function (Request $request) {
         ]
     );
 
+    dd(typeOf($customer));
+
     // 5️⃣ Ensure there is a cart session
     $cart = CartSession::current();
     if (!$cart) {
