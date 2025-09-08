@@ -119,10 +119,12 @@ use Lunar\Facades\CartSession;
 //     return redirect('/test'); // or your homepage
 // });
 
+
 Route::get('/auth/google/callback', function (Request $request) {
+    // 1️⃣ Get user from Google
     $googleUser = Socialite::driver('google')->user();
 
-    // Create or update local user
+    // 2️⃣ Create or update local User
     $user = User::updateOrCreate(
         ['google_id' => $googleUser->id],
         [
@@ -131,30 +133,41 @@ Route::get('/auth/google/callback', function (Request $request) {
         ]
     );
 
-    // Login and regenerate session
+    // 3️⃣ Login user and regenerate session
     Auth::login($user);
     $request->session()->regenerate();
 
-    // ✅ Ensure Lunar Customer exists for this user
+    // 4️⃣ Ensure a Lunar Customer exists
+    $nameParts = explode(' ', $user->name);
+    $firstName = $nameParts[0] ?? '';
+    $lastName = $nameParts[1] ?? '';
+
     $customer = Customer::firstOrCreate(
-        ['account_ref' => $user->id], // correct way
+        ['account_ref' => $user->id], // link via unique account_ref
         [
-            'title' => 'Mr.',
-            'first_name' => explode(' ', $user->name)[0] ?? '',
-            'last_name'  => explode(' ', $user->name)[1] ?? '',
-            'email'      => $user->email,
+            'title'      => 'Mr.',
+            'first_name' => $firstName,
+            'last_name'  => $lastName,
+            'meta'       => ['email' => $user->email],
         ]
     );
-    dd($customer->toArray(), $customer->exists, $customer->id);
 
-    // ✅ Attach current cart to this customer
+    // 5️⃣ Ensure there is a cart session
     $cart = CartSession::current();
-    if ($cart) {
-        CartSession::setCustomer($customer);
-        $cart->associate($user); // still ties to user_id
+    if (!$cart) {
+        $cart = CartSession::create();
     }
 
-    return redirect('/test'); // or your homepage
+    // 6️⃣ Attach customer to cart session
+    CartSession::setCustomer($customer);
+
+    // 7️⃣ Attach user to the same cart
+    $cart = CartSession::current(); // re-fetch to ensure session cart
+    $cart->user()->associate($user);
+    $cart->save();
+
+    // 8️⃣ Redirect after login
+    return redirect('/test');
 });
 
 // Route::get('/lunar/admin', function () {
